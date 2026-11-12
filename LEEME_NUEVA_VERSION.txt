@@ -1,0 +1,29 @@
+PLUTORADAR AESS - PANEL DE MOVIMIENTO Y FILTRO EN VIVO
+
+1. Extraer este ZIP en una carpeta nueva.
+2. Ejecutar INSTALAR_WINDOWS.bat (una sola vez).
+3. Abrir y ejecutar el diagrama GNU Radio modificado por el usuario.
+4. Comprobar puertos: 5557=RX sin filtrar, 5558=referencia TX, 5559=RX filtrada.
+5. Ejecutar INICIAR_PLUTO.bat.
+
+MONITOR
+- Selector Doppler / Rechazo de banda en la gráfica principal.
+- Cada gráfica conserva su rango de frecuencia al alternar.
+- Unidades Hz, kHz, MHz, GHz son de visualización, no amplían el ancho de banda.
+- La vista 2.5D representa sólo movimiento radial relativo. NO mide posición,
+  distancia ni ángulo. Se mueve únicamente con dirección calibrada y detección.
+
+AJUSTES
+- Umbral sobre ruido (dB): prominencia mínima del pico frente al ruido.
+- Umbral mínimo Doppler (Hz): excluye frecuencias cercanas a 0 Hz.
+- Suavizado: número de mediciones recientes para la mediana de frecuencia.
+- Invertir signo Doppler: cambiar si acercamiento/alejamiento están invertidos.
+- Dirección calibrada: marcar únicamente tras una prueba física con la placa.
+- GUARDAR AJUSTES: guarda en ajustes_usuario.json para el siguiente inicio.
+
+NOTAS
+- La medición del filtro en vivo es una estimación PSD; requiere energía
+  suficiente en la entrada y señales aproximadamente estacionarias.
+- Se incluye el diagrama actualizado en el archivo radar (1).grc.
+- Probado: sintaxis Python y apertura de interfaz bajo pantalla virtual.
+- No probado: conexión física a PlutoSDR ni exactitud de signo/calibración.

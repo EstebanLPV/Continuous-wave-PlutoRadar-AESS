@@ -1,0 +1,22 @@
+PLUTORADAR AESS - GRAFICA DE RECHAZO EN VIVO
+
+1. CONSERVA TU ARCHIVO .GRC EDITADO EN GNU RADIO. Este ZIP no lo sustituye.
+2. En GNU Radio deben publicarse señales Complex (complex64), Pass Tags No:
+   5557 = RX antes del Band Reject Filter
+   5558 = referencia TX para el motor Doppler (mantener como ya funciona)
+   5559 = RX despues del Band Reject Filter (nuevo ZMQ PUB Sink)
+   5550 = señal TX si se usa en el diagrama, sin cambios.
+3. Ejecuta GNU Radio y luego INICIAR_PLUTO.bat.
+4. En Analisis, la ultima grafica ahora estima 10 log10(PSD_filtrada/PSD_original).
+   Se actualiza aproximadamente 3 veces por segundo; usa FFT de 65536 puntos.
+5. Si no llegan datos por ambos puertos, veras el estado 'Esperando ZMQ'.
+
+LIMITACIONES IMPORTANTES:
+- Se estima una relacion espectral en vivo, no la funcion de transferencia
+  exacta del filtro. Se requiere excitacion suficiente y señal estacionaria.
+- Las frecuencias sin energia suficiente no se dibujan; no es un fallo.
+- Para una curva de rechazo estable sobre todo el rango es preferible una
+  fuente de prueba de banda ancha o una medicion calibrada con los taps FIR.
+- Las ventanas de ambos canales se comparan por potencia espectral promedio,
+  no por fase, porque los PUB sockets no garantizan alineacion de muestras.
+- No se ha probado con hardware PlutoSDR real en esta sesion.

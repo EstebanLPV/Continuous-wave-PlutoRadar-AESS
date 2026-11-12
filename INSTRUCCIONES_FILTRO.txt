@@ -1,0 +1,12 @@
+PLUTORADAR AESS - GRAFICA BAND REJECT FILTER
+
+1. Ejecuta INSTALAR_WINDOWS.bat una sola vez.
+2. Abre tu diagrama radar (1).grc en GNU Radio Companion.
+3. No agregues ningún bloque: el Band Reject Filter ya está conectado.
+4. Ejecuta el flujo GNU Radio con tu PlutoSDR.
+5. Ejecuta INICIAR_PLUTO.bat.
+6. PlutoRadar inicia directamente en Análisis y muestra la curva estimada del filtro entre 495 y 505 Hz. Para el espectro Doppler usa la pestaña Monitor.
+
+IMPORTANTE: NO conectes otro ZMQ al puerto 5558. Ese puerto ya se usa para la referencia TX. El 5557 es la señal RX antes del filtro. La curva del filtro es calculada a partir de sus parámetros, no una medición real. No se requiere modificar GNU Radio para mostrar esta curva.
+
+Si aparece error init.tcl, repara la instalación de Python incluyendo Tcl/Tk. Si falla Pillow, usa REPARAR_ENTORNO.bat.

@@ -1,0 +1,4 @@
+numpy==2.4.4
+Pillow==12.2.0
+pyzmq==27.1.0
+pyinstaller==6.20.0

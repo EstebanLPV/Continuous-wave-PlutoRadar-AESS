@@ -1,0 +1,15 @@
+PLUTORADAR AESS · WINDOWS 10 Y 11 DE 64 BITS
+
+Abre PlutoRadar AESS desde el menú Inicio.
+
+Para recibir datos reales, instala GNU Radio con los bloques IIO y ZeroMQ.
+Conecta PlutoSDR y abre el diagrama «radar (1).grc» de esta misma carpeta
+en GNU Radio Companion. Ejecuta el diagrama y abre PlutoRadar.
+
+Puertos locales:
+5557  RX antes del filtro
+5558  Referencia TX
+5559  RX después del filtro
+
+Los ajustes de la aplicación se guardan en %LOCALAPPDATA%\PlutoRadar-AESS.
+Puedes desinstalar PlutoRadar desde Configuración → Aplicaciones.

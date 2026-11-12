@@ -1,0 +1,81 @@
+name: Compilar y publicar PlutoRadar para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "*.py"
+      - "*.grc"
+      - "configuracion_radar.json"
+      - "logo_aess.png"
+      - "LEEME_EJECUTABLE.txt"
+      - "windows/**"
+      - ".github/workflows/windows-exe.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pluto-windows-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.12"
+          architecture: x64
+
+      - name: Compilar la aplicación con Python y Tcl/Tk incluidos
+        shell: pwsh
+        run: |
+          python -m pip install -r windows/requirements-build.txt
+          if ($LASTEXITCODE) { throw 'Falló la instalación de dependencias.' }
+          python -m PyInstaller --noconfirm --clean --onedir --windowed --name PlutoRadar --add-data "logo_aess.png;." --collect-all zmq native_app.py
+          if ($LASTEXITCODE) { throw 'Falló PyInstaller.' }
+          Copy-Item -LiteralPath @('configuracion_radar.json', 'radar (1).grc', 'LEEME_EJECUTABLE.txt') -Destination dist/PlutoRadar/
+
+      - name: Crear el instalador de Windows
+        shell: pwsh
+        run: |
+          $nsis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+          if (-not (Test-Path $nsis)) {
+            choco install nsis --yes --no-progress
+            if ($LASTEXITCODE) { throw 'Falló la instalación de NSIS.' }
+          }
+          $version = (Get-Content windows/version.txt -Raw).Trim()
+          & $nsis "/DPRODUCT_VERSION=$version" "windows/PlutoRadar.nsi"
+          if ($LASTEXITCODE) { throw 'Falló la compilación del instalador.' }
+
+      - name: Probar la instalación, el arranque y la desinstalación
+        shell: pwsh
+        run: |
+          ./windows/test-installer.ps1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PlutoRadar-Setup-x64
+          path: dist/PlutoRadar-Setup-x64.exe
+          if-no-files-found: error
+
+      - name: Publicar el instalador en Releases
+        if: github.ref_name == github.event.repository.default_branch
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content windows/version.txt -Raw).Trim()
+          $tag = "v$version"
+          $installer = 'dist/PlutoRadar-Setup-x64.exe'
+          $assets = gh release view $tag --json assets --jq '.assets[].name' 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag $installer --target $env:GITHUB_SHA --title "PlutoRadar AESS $version" --notes "Instalador para Windows 10 y 11 de 64 bits. Incluye la aplicación, su entorno de ejecución y el diagrama de GNU Radio. Para recibir señales reales se requiere GNU Radio y PlutoSDR."
+          } elseif ('PlutoRadar-Setup-x64.exe' -notin $assets) {
+            gh release upload $tag $installer
+          }
+          if ($LASTEXITCODE) { throw 'Falló la publicación de la versión.' }
